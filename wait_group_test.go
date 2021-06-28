@@ -11,7 +11,7 @@ func Test_WaitGroup(t *testing.T) {
 		d := util.Elapse(func() {
 			wg := util.WaitGroup{}
 			ch := make(chan int, chsize)
-			wg.Together(func(threadIdx, numThreads int) {
+			wg.TogetherF(func(threadIdx, numThreads int) {
 				for i := threadIdx; i < 1000000; i += numThreads {
 					ch <- i
 				}
@@ -22,7 +22,7 @@ func Test_WaitGroup(t *testing.T) {
 				for range ch {
 
 				}
-			}, nil)
+			})
 			wg.Wait()
 		})
 		t.Logf("chsize %v, elapse %v\n", chsize, d)

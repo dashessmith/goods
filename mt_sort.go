@@ -114,7 +114,7 @@ func MtSort2(x interface{}, less func(i, j int) bool) {
 		for lr := range ch {
 			partition(lr[0], lr[1])
 		}
-	}, nil)
+	})
 
 	ch <- []int{0, totalN - 1}
 }
