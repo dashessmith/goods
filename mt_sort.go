@@ -106,23 +106,45 @@ func MtSort2(x interface{}, less func(i, j int) bool) {
 			swap(pivot, l)
 			pivot = l
 		}
-		if left < pivot {
-			select {
-			case ch <- []int{left, pivot}:
-			default:
-				partition(left, pivot)
+		if pivot-left > right-pivot-1 {
+			if left < pivot {
+				select {
+				case ch <- []int{left, pivot}:
+				default:
+					partition(left, pivot)
+				}
+			} else {
+				incre(1)
+			}
+			if pivot+1 < right {
+				select {
+				case ch <- []int{pivot + 1, right}:
+				default:
+					partition(pivot+1, right)
+				}
+			} else if pivot+1 == right {
+				incre(1)
 			}
 		} else {
-			incre(1)
-		}
-		if pivot+1 < right {
-			select {
-			case ch <- []int{pivot + 1, right}:
-			default:
-				partition(pivot+1, right)
+			if pivot+1 < right {
+				select {
+				case ch <- []int{pivot + 1, right}:
+				default:
+					partition(pivot+1, right)
+				}
+			} else if pivot+1 == right {
+				incre(1)
 			}
-		} else if pivot+1 == right {
-			incre(1)
+
+			if left < pivot {
+				select {
+				case ch <- []int{left, pivot}:
+				default:
+					partition(left, pivot)
+				}
+			} else {
+				incre(1)
+			}
 		}
 	}
 	wg.Together(func(threadIdx, numThreads int) {
