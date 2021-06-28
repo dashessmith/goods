@@ -3,10 +3,28 @@ package util
 import (
 	"runtime"
 	"sync"
+	"sync/atomic"
 )
 
 type WaitGroup struct {
 	sync.WaitGroup
+	goCount int64
+}
+
+func (wg *WaitGroup) GoOrCall(f func()) {
+	if atomic.AddInt64(&wg.goCount, 1) < int64(runtime.NumCPU()) {
+		wg.Add(1)
+		go func() {
+			defer func() {
+				wg.Done()
+				atomic.AddInt64(&wg.goCount, -1)
+			}()
+			f()
+		}()
+	} else {
+		atomic.AddInt64(&wg.goCount, -1)
+		f()
+	}
 }
 
 func (wg *WaitGroup) Go(f func()) {

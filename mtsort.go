@@ -2,11 +2,18 @@ package util
 
 import (
 	"reflect"
+	"runtime"
+	"sync/atomic"
 )
 
 // MtSort sort in multi threads
 func MtSort(x interface{}, less func(i, j int) bool) {
-	threadLimit := (1 << 12)
+	MtSort1(x, less)
+}
+
+// MtSort sort in multi threads
+func MtSort1(x interface{}, less func(i, j int) bool) {
+	threadLimit := (1 << 10)
 	swap := reflect.Swapper(x)
 	wg := WaitGroup{}
 	defer wg.Wait()
@@ -31,7 +38,7 @@ func MtSort(x interface{}, less func(i, j int) bool) {
 		}
 		if left < pivot {
 			if left+threadLimit < pivot {
-				wg.Go(func() {
+				wg.GoOrCall(func() {
 					impl(left, pivot)
 				})
 			} else {
@@ -43,4 +50,71 @@ func MtSort(x interface{}, less func(i, j int) bool) {
 		}
 	}
 	impl(0, reflect.ValueOf(x).Len()-1)
+}
+
+// MtSort2 sort in multi threads
+func MtSort2(x interface{}, less func(i, j int) bool) {
+	swap := reflect.Swapper(x)
+	wg := WaitGroup{}
+	defer wg.Wait()
+
+	ch := make(chan []int, runtime.NumCPU())
+
+	totalN := reflect.ValueOf(x).Len()
+	if totalN <= 1 {
+		return
+	}
+	var N int64
+
+	incre := func(n int64) {
+		if atomic.AddInt64(&N, n) >= int64(totalN) {
+			SafeClose(ch)
+		}
+	}
+
+	var partition func(left, right int)
+	partition = func(left, right int) {
+		pivot := left
+		for l, r := left, right; l < r; {
+			for ; pivot < r && !less(r, pivot); r-- {
+			}
+			if pivot >= r {
+				break
+			}
+			swap(pivot, r)
+			pivot = r
+			for ; l < pivot && !less(pivot, l); l++ {
+			}
+			if l >= pivot {
+				break
+			}
+			swap(pivot, l)
+			pivot = l
+		}
+		if left < pivot {
+			select {
+			case ch <- []int{left, pivot}:
+			default:
+				partition(left, pivot)
+			}
+		} else {
+			incre(1)
+		}
+		if pivot+1 < right {
+			select {
+			case ch <- []int{pivot + 1, right}:
+			default:
+				partition(pivot+1, right)
+			}
+		} else if pivot+1 == right {
+			incre(1)
+		}
+	}
+	wg.Together(func(threadIdx, numThreads int) {
+		for lr := range ch {
+			partition(lr[0], lr[1])
+		}
+	}, nil)
+
+	ch <- []int{0, totalN - 1}
 }
