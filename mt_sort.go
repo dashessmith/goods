@@ -36,17 +36,32 @@ func MtSort1(x interface{}, less func(i, j int) bool) {
 			swap(pivot, l)
 			pivot = l
 		}
-		if left < pivot {
-			if left+threadLimit < pivot {
-				wg.GoOrCall(func() {
+		if pivot-left > right-pivot-1 {
+			if left < pivot {
+				if left+threadLimit < pivot {
+					wg.GoOrCall(func() {
+						impl(left, pivot)
+					})
+				} else {
 					impl(left, pivot)
-				})
-			} else {
+				}
+			}
+			if pivot+1 < right {
+				impl(pivot+1, right)
+			}
+		} else {
+			if pivot+1 < right {
+				if pivot+1+threadLimit < right {
+					wg.GoOrCall(func() {
+						impl(pivot+1, right)
+					})
+				} else {
+					impl(pivot+1, right)
+				}
+			}
+			if left < pivot {
 				impl(left, pivot)
 			}
-		}
-		if pivot+1 < right {
-			impl(pivot+1, right)
 		}
 	}
 	impl(0, reflect.ValueOf(x).Len()-1)
