@@ -5,3 +5,9 @@ func CopyInt64(src []int64) (ret []int64) {
 	copy(ret, src)
 	return
 }
+
+func CopyInt(src []int) (ret []int) {
+	ret = make([]int, len(src))
+	copy(ret, src)
+	return
+}
