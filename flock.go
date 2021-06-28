@@ -1,0 +1,22 @@
+package util
+
+import (
+	"log"
+	"os"
+
+	"github.com/gofrs/flock"
+)
+
+func WithFlock(path string, f func()) {
+	lock := flock.New(path)
+	ok, err := lock.TryLock()
+	if !ok || err != nil {
+		log.Printf("%v is held by another process\n", path)
+		return
+	}
+	defer func() {
+		lock.Close()
+		os.Remove(path)
+	}()
+	f()
+}

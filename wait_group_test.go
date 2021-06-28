@@ -1,15 +1,15 @@
-package goutil_test
+package util_test
 
 import (
 	"testing"
 
-	"github.com/dashessmith/goutil"
+	"github.com/dashessmith/util"
 )
 
 func Test_WaitGroup(t *testing.T) {
 	for chsize := 0; chsize <= 10000; chsize += 1000 {
-		d := goutil.Elapse(func() {
-			wg := goutil.WaitGroup{}
+		d := util.Elapse(func() {
+			wg := util.WaitGroup{}
 			ch := make(chan int, chsize)
 			wg.Together(func(threadIdx, numThreads int) {
 				for i := threadIdx; i < 1000000; i += numThreads {
