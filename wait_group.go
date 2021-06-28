@@ -12,17 +12,10 @@ type WaitGroup struct {
 }
 
 func (wg *WaitGroup) GoOrCall(f func()) {
+	defer atomic.AddInt64(&wg.goCount, -1)
 	if atomic.AddInt64(&wg.goCount, 1) < int64(runtime.NumCPU()) {
-		wg.Add(1)
-		go func() {
-			defer func() {
-				wg.Done()
-				atomic.AddInt64(&wg.goCount, -1)
-			}()
-			f()
-		}()
+		wg.Go(f)
 	} else {
-		atomic.AddInt64(&wg.goCount, -1)
 		f()
 	}
 }
