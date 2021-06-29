@@ -156,14 +156,20 @@ func MtSort2(x interface{}, less func(i, j int) bool) {
 	ch <- []int{0, totalN - 1}
 }
 
+// merge sort
 func MtSort3(x interface{}, less func(i, j int) bool) {
-
 	swap := reflect.Swapper(x)
 
 	N := reflect.ValueOf(x).Len()
 
-	var impl func(l, r int, x interface{})
-	impl = func(l, r int, x interface{}) {
+	nextGap := func(gap int) int {
+		if gap <= 1 {
+			return 0
+		}
+		return gap/2 + gap%2
+	}
+	var impl func(l, r int)
+	impl = func(l, r int) {
 		if l+1 >= r {
 			return
 		}
@@ -174,21 +180,25 @@ func MtSort3(x interface{}, less func(i, j int) bool) {
 			return
 		}
 		mid := (l + r) / 2
-		impl(l, mid, x)
-		impl(mid, r, x)
+		if r-l >= 2048 {
+			wg := WaitGroup{}
+			wg.Go(func() {
+				impl(l, mid)
+			})
+			impl(mid, r)
+			wg.Wait()
+		} else {
+			impl(l, mid)
+			impl(mid, r)
+		}
 
-		for ; l+1 < r; l++ {
-			if l >= mid {
-				break
-			}
-			if !less(mid, l) {
-				continue
-			}
-			swap(mid, l)
-			if mid+1 < r {
-				mid++
+		for gap := nextGap(r - l); gap > 0; gap = nextGap(gap) {
+			for i := l; i+gap < r; i++ {
+				if less(i+gap, i) {
+					swap(i+gap, i)
+				}
 			}
 		}
 	}
-	impl(0, N, x)
+	impl(0, N)
 }

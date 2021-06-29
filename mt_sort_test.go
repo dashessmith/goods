@@ -12,13 +12,15 @@ import (
 
 func Test_MtSort(t *testing.T) {
 	rand.Seed(time.Now().Unix())
-	N := 100000000
+	N := 10000000
 	arr := make([]int, N)
 	for i := 0; i < N; i++ {
+		//arr[i] = i
 		arr[i] = rand.Intn(N)
 	}
 	arr1 := util.CopyInt(arr)
 	arr2 := util.CopyInt(arr)
+	arr3 := util.CopyInt(arr)
 	d1 := util.Elapse(func() {
 		util.MtSort1(arr1, func(i, j int) bool {
 			return arr1[i] < arr1[j]
@@ -29,10 +31,17 @@ func Test_MtSort(t *testing.T) {
 			return arr2[i] < arr2[j]
 		})
 	})
+	d3 := util.Elapse(func() {
+		util.MtSort3(arr3, func(i, j int) bool {
+			return arr3[i] < arr3[j]
+		})
+	})
 	assert.Equal(t, arr1, arr2)
+	assert.Equal(t, arr1, arr3)
 	assert.True(t, sort.IsSorted(util.SortInts(arr1)))
-	assert.True(t, sort.IsSorted(util.SortInts(arr1)))
-	t.Logf("d1 = %v, d2 = %v\n", d1, d2)
+	assert.True(t, sort.IsSorted(util.SortInts(arr2)))
+	assert.True(t, sort.IsSorted(util.SortInts(arr3)))
+	t.Logf("d1 = %v, d2 = %v, d3 = %v\n", d1, d2, d3)
 }
 
 func Test_MtSort2(t *testing.T) {
@@ -59,17 +68,17 @@ func Test_MtSort2(t *testing.T) {
 func Test_MtSort3(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
-	N := 10
+	N := 1000000
 	origin := make([]int, N)
 	for i := 0; i < N; i++ {
 		origin[i] = rand.Intn(N)
 	}
 	//origin = []int{7, 9, 3, 9, 0, 7, 2, 4, 0, 8}
-	origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
+	//origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
 	arr := util.CopyInt(origin)
 
 	d2 := util.Elapse(func() {
-		util.MtSort3(arr, func(i, j int) bool {
+		util.MtSort1(arr, func(i, j int) bool {
 			return arr[i] < arr[j]
 		})
 	})
