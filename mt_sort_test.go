@@ -55,3 +55,26 @@ func Test_MtSort2(t *testing.T) {
 	}
 	t.Logf("d1 = %v\n", d2)
 }
+
+func Test_MtSort3(t *testing.T) {
+	rand.Seed(time.Now().Unix())
+
+	N := 10
+	origin := make([]int, N)
+	for i := 0; i < N; i++ {
+		origin[i] = rand.Intn(N)
+	}
+	//origin = []int{7, 9, 3, 9, 0, 7, 2, 4, 0, 8}
+	origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
+	arr := util.CopyInt(origin)
+
+	d2 := util.Elapse(func() {
+		util.MtSort3(arr, func(i, j int) bool {
+			return arr[i] < arr[j]
+		})
+	})
+	if !assert.True(t, sort.IsSorted(util.SortInts(arr))) {
+		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
+	}
+	t.Logf("d1 = %v\n", d2)
+}
