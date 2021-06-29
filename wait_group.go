@@ -40,9 +40,7 @@ func (wg *WaitGroup) Together(f func(threadIdx, numThreads int)) {
 
 func (wg *WaitGroup) TogetherF(f func(threadIdx, numThreads int), final func()) {
 	if final == nil {
-		wg.Together(func(threadIdx, numThreads int) {
-			f(threadIdx, numThreads)
-		})
+		wg.Together(f)
 		return
 	}
 	inner := WaitGroup{}
