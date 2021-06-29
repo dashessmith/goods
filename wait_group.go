@@ -50,3 +50,9 @@ func (wg *WaitGroup) TogetherF(f func(threadIdx, numThreads int), final func()) 
 		final()
 	})
 }
+
+func Together(f func(threadIdx, numThreads int)) {
+	wg := WaitGroup{}
+	defer wg.Wait()
+	wg.Together(f)
+}
