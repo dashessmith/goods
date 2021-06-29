@@ -1,14 +1,20 @@
 package util
 
 import (
+	"math/rand"
 	"reflect"
 	"runtime"
 	"sync/atomic"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().Unix())
+}
 
 // MtSort sort in multi threads
 func MtSort(x interface{}, less func(i, j int) bool) {
-	MtSort1(x, less)
+	MtSort4(x, less)
 }
 
 // MtSort sort in multi threads
@@ -201,4 +207,75 @@ func MtSort3(x interface{}, less func(i, j int) bool) {
 		}
 	}
 	impl(0, N)
+}
+
+// MtSort4 q sort mt mid pivot, first rand pivot
+func MtSort4(x interface{}, less func(i, j int) bool) {
+	threadLimit := (1 << 10)
+	swap := reflect.Swapper(x)
+	N := reflect.ValueOf(x).Len()
+	if N <= 1 {
+		return
+	}
+	wg := WaitGroup{}
+	defer wg.Wait()
+	first := true
+	var impl func(left, right int)
+	impl = func(left, right int) {
+		if left >= right {
+			return
+		}
+		if left+1 == right {
+			if less(right, left) {
+				swap(right, left)
+			}
+			return
+		}
+		var pivot int
+		if first {
+			pivot = left + rand.Intn(right-left)
+			first = false
+		} else {
+			pivot = (left + right) / 2
+		}
+		swap(pivot, right)
+		j := left
+		for i := left; i < right; i++ {
+			if less(i, right) {
+				swap(i, j)
+				j++
+			}
+		}
+		swap(j, right)
+		pivot = j
+
+		if pivot-left > right-pivot-1 {
+			if left < pivot {
+				if left+threadLimit < pivot {
+					wg.GoOrCall(func() {
+						impl(left, pivot)
+					})
+				} else {
+					impl(left, pivot)
+				}
+			}
+			if pivot+1 < right {
+				impl(pivot+1, right)
+			}
+		} else {
+			if pivot+1 < right {
+				if pivot+1+threadLimit < right {
+					wg.GoOrCall(func() {
+						impl(pivot+1, right)
+					})
+				} else {
+					impl(pivot+1, right)
+				}
+			}
+			if left < pivot {
+				impl(left, pivot)
+			}
+		}
+	}
+	impl(0, N-1)
 }
