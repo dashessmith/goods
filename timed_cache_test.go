@@ -35,6 +35,7 @@ func Test_NewTimedcache(t *testing.T) {
 }
 
 func Test_get(t *testing.T) {
+	// 56 seconds
 	cache := util.NewTimedcache()
 	d := util.Elapse(func() {
 		util.Together(func(int, int) {
