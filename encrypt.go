@@ -1,6 +1,5 @@
 package util
 
-
 import (
 	"crypto/aes"
 	"crypto/cipher"
