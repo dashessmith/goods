@@ -11,8 +11,8 @@ import (
 func init() {
 	go func() {
 		type S struct {
-			samples int
-			t       time.Duration
+			samples uint64
+			t       float64
 			newly   bool
 		}
 		dict := map[string]*S{}
@@ -25,7 +25,11 @@ func init() {
 				dict[*tag.tag] = s
 			}
 			s.samples++
-			s.t += tag.t
+			s.t += tag.t.Seconds()
+			if s.samples == 0 {
+				s.samples = 1
+				s.t = tag.t.Seconds()
+			}
 			s.newly = true
 			if len(dict) <= 0 || lastPrintTime.Add(3*time.Second).After(time.Now()) {
 				continue
@@ -40,7 +44,7 @@ func init() {
 			fmt.Fprintf(writer, "tag\t\tspeed(sec)\t\tsamples\n")
 			for _, tag := range tags {
 				s := dict[tag]
-				v := s.t.Seconds() / float64(s.samples)
+				v := s.t / float64(s.samples)
 				if s.newly {
 					s.newly = false
 					fmt.Fprintf(writer, "*%s\t\t%.3f\t\t%v\n", tag, v, s.samples)
