@@ -12,7 +12,8 @@ func init() {
 	go func() {
 		type S struct {
 			samples int
-			t       time.Time
+			t       time.Duration
+			newly   bool
 		}
 		dict := map[string]*S{}
 
@@ -20,14 +21,12 @@ func init() {
 		for tag := range _speedch {
 			s := dict[*tag.tag]
 			if s == nil {
-				s = &S{
-					samples: 1,
-					t:       tag.t,
-				}
+				s = &S{}
 				dict[*tag.tag] = s
-			} else {
-				s.samples++
 			}
+			s.samples++
+			s.t += tag.t
+			s.newly = true
 			if len(dict) <= 0 || lastPrintTime.Add(3*time.Second).After(time.Now()) {
 				continue
 			}
@@ -38,11 +37,16 @@ func init() {
 			sort.Strings(tags)
 			writer := tabwriter.NewWriter(log.Default().Writer(), 1, 40, 10, ' ', 0)
 			fmt.Fprintf(writer, "--------- speed --------\n")
-			fmt.Fprintf(writer, "tag\t\tspeed(/sec)\n")
+			fmt.Fprintf(writer, "tag\t\tspeed(sec)\t\tsamples\n")
 			for _, tag := range tags {
 				s := dict[tag]
-				fmt.Fprintf(writer, "%s\t\t%.2f\n", tag, float64(s.samples)/time.Since(s.t).Seconds())
-				delete(dict, tag)
+				v := s.t.Seconds() / float64(s.samples)
+				if s.newly {
+					s.newly = false
+					fmt.Fprintf(writer, "*%s\t\t%.3f\t\t%v\n", tag, v, s.samples)
+				} else {
+					fmt.Fprintf(writer, " %s\t\t%.3f\t\t%v\n", tag, v, s.samples)
+				}
 			}
 			writer.Flush()
 			lastPrintTime = time.Now()
@@ -54,12 +58,41 @@ var _speedch = make(chan *_Sample, 1024)
 
 type _Sample struct {
 	tag *string
-	t   time.Time
+	t   time.Duration
+}
+type SpeedSample struct {
+	tag    *string
+	beginT time.Time
+	endT   time.Time
+	pauseT time.Time
 }
 
-func Speed(tag string) {
-	_speedch <- &_Sample{
-		tag: &tag,
-		t:   time.Now(),
+func NewSpeedSample(tag string) *SpeedSample {
+	return &SpeedSample{
+		tag:    &tag,
+		beginT: time.Now(),
 	}
+}
+
+func (ss *SpeedSample) Pause() {
+	ss.pauseT = time.Now()
+}
+
+func (ss *SpeedSample) Resume() {
+	ss.beginT = ss.beginT.Add(time.Since(ss.pauseT))
+}
+
+func (ss *SpeedSample) Flush() {
+	ss.endT = time.Now()
+	_speedch <- &_Sample{
+		tag: ss.tag,
+		t:   ss.endT.Sub(ss.beginT),
+	}
+	ss.beginT = ss.endT
+}
+
+func SpeedSampleF(tag string, f func()) {
+	ss := NewSpeedSample(tag)
+	defer ss.Flush()
+	f()
 }
