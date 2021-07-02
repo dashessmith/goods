@@ -20,10 +20,16 @@ func NewTimedcache() *Timedcache {
 }
 
 func (tc *Timedcache) Get(key string, fetchfunc func() (x interface{}, kt time.Duration, err error)) (x interface{}, err error) {
-	actual, _ := tc.data.LoadOrStore(key, &timedcacheitem{})
-	item := actual.(*timedcacheitem)
-	if item.et.After(time.Now()) {
-		return item.x, nil
+	var item *timedcacheitem
+	actual, _ := tc.data.Load(key)
+	if actual != nil {
+		item = actual.(*timedcacheitem)
+		if item.et.After(time.Now()) {
+			return item.x, nil
+		}
+	} else {
+		actual, _ = tc.data.LoadOrStore(key, &timedcacheitem{})
+		item = actual.(*timedcacheitem)
 	}
 	WithMutex(&item.mtx, func() {
 		if item.et.After(time.Now()) {
