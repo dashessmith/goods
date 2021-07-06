@@ -2,6 +2,7 @@ package util_test
 
 import (
 	"testing"
+
 	"github.com/dashessmith/util"
 )
 
