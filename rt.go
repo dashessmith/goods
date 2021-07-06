@@ -6,11 +6,13 @@ import (
 	"strings"
 )
 
-var BinName = ""
-var BinExt = ""
-var BinNameExt = ""
-var BinDir = ""
-var BinPath = ""
+var (
+	BinName    = ""
+	BinExt     = ""
+	BinNameExt = ""
+	BinDir     = ""
+	BinPath    = ""
+)
 
 func init() {
 	var err error

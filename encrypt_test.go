@@ -1,12 +1,13 @@
 package util_test
 
 import (
-	"github.com/dashessmith/util"
 	"testing"
+
+	"github.com/dashessmith/util"
 )
 
 func Test_encrypt(t *testing.T) {
-	var str = "hello world"
+	str := "hello world"
 	key := [32]byte{0}
 	encrypted := util.Encrypt([]byte(str), key[:])
 	t.Logf("%s\n", encrypted)

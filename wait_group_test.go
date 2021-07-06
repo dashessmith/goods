@@ -20,7 +20,6 @@ func Test_WaitGroup(t *testing.T) {
 			})
 			wg.Together(func(threadIdx, numThreads int) {
 				for range ch {
-
 				}
 			})
 			wg.Wait()

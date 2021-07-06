@@ -16,7 +16,7 @@ func Test_MtSort(t *testing.T) {
 	arr := make([]int, N)
 	for i := 0; i < N; i++ {
 		arr[i] = i
-		//arr[i] = rand.Intn(N)
+		// arr[i] = rand.Intn(N)
 	}
 	arr1 := util.CopyInt(arr)
 	arr2 := util.CopyInt(arr)
@@ -73,8 +73,8 @@ func Test_MtSort3(t *testing.T) {
 	for i := 0; i < N; i++ {
 		origin[i] = rand.Intn(N)
 	}
-	//origin = []int{7, 9, 3, 9, 0, 7, 2, 4, 0, 8}
-	//origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
+	// origin = []int{7, 9, 3, 9, 0, 7, 2, 4, 0, 8}
+	// origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
 	arr := util.CopyInt(origin)
 
 	d2 := util.Elapse(func() {
@@ -94,15 +94,39 @@ func Test_MtSort4(t *testing.T) {
 	N := 100000000
 	origin := make([]int, N)
 	for i := 0; i < N; i++ {
-		origin[i] = rand.Intn(N)
-		//origin[i] = i
+		origin[i] = rand.Intn(N) / N
+		// origin[i] = i
 	}
-	//origin = []int{7, 9, 3, 9, 0, 7, 2, 4, 0, 8}
-	//origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
+	// origin = []int{7, 9, 3, 9, 0, 7, 2, 4, 0, 8}
+	// origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
 	arr := util.CopyInt(origin)
 
 	d2 := util.Elapse(func() {
 		util.MtSort4(arr, func(i, j int) bool {
+			return arr[i] < arr[j]
+		})
+	})
+	if !assert.True(t, sort.IsSorted(util.SortInts(arr))) {
+		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
+	}
+	t.Logf("d1 = %v\n", d2)
+}
+
+func Test_MtSortOrigin(t *testing.T) {
+	rand.Seed(time.Now().Unix())
+
+	N := 100000000
+	origin := make([]int, N)
+	for i := 0; i < N; i++ {
+		origin[i] = rand.Intn(N)
+		// origin[i] = i
+	}
+	// origin = []int{7, 9, 3, 9, 0, 7, 2, 4, 0, 8}
+	// origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
+	arr := util.CopyInt(origin)
+
+	d2 := util.Elapse(func() {
+		sort.Slice(arr, func(i, j int) bool {
 			return arr[i] < arr[j]
 		})
 	})

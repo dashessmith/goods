@@ -64,6 +64,7 @@ type _Sample struct {
 	tag *string
 	t   time.Duration
 }
+
 type SpeedSample struct {
 	tag    *string
 	beginT time.Time

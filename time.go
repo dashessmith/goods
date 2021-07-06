@@ -14,7 +14,7 @@ func TimeCeilDay(t time.Time) time.Time {
 
 // 一周开始时间
 func TimeFloorWeek(t time.Time) time.Time {
-	var res = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, nil)
+	res := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, nil)
 	switch wd := int(t.Weekday()); wd {
 	case 0: // 星期日
 		res = res.AddDate(0, 0, -6)
