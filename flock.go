@@ -8,6 +8,9 @@ import (
 )
 
 func WithFlock(path string, f func()) {
+	if len(path) <= 0 {
+		path = BinNameExt + ".lock"
+	}
 	lock := flock.New(path)
 	ok, err := lock.TryLock()
 	if !ok || err != nil {
