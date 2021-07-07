@@ -21,3 +21,10 @@ func WithSignal(x WithSignalInterface) (err error) {
 	err = x.Run()
 	return
 }
+
+func UniqueRunWithSignal(svc WithSignalInterface) (err error) {
+	WithFlock("", func() {
+		err = WithSignal(svc)
+	})
+	return
+}
