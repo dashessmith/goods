@@ -7,13 +7,18 @@ import (
 )
 
 type WaitGroup struct {
+	GoCountMax int64
+	goCount    int64
 	sync.WaitGroup
-	goCount int64
 }
 
 func (wg *WaitGroup) GoOrCall(f func()) {
 	defer atomic.AddInt64(&wg.goCount, -1)
-	if atomic.AddInt64(&wg.goCount, 1) < int64(runtime.NumCPU()) {
+	max := wg.GoCountMax
+	if max <= 0 {
+		max = int64(runtime.NumCPU())
+	}
+	if atomic.AddInt64(&wg.goCount, 1) < max {
 		wg.Go(f)
 	} else {
 		f()
