@@ -16,3 +16,7 @@ func FileExists(filename string) (yes bool, err error) {
 	yes = fi.Mode().IsRegular()
 	return
 }
+
+func EnsureDir(path string) (err error) {
+	return os.MkdirAll(path, os.ModePerm)
+}
