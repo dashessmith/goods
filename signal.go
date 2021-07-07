@@ -22,8 +22,8 @@ func WithSignal(x WithSignalInterface) (err error) {
 	return
 }
 
-func UniqueRunWithSignal(svc WithSignalInterface) (err error) {
-	WithFlock("", func() {
+func UniqueRunWithSignal(svc WithSignalInterface, tag string) (err error) {
+	WithFlock(tag, func() {
 		err = WithSignal(svc)
 	})
 	return
