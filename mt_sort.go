@@ -4,6 +4,8 @@ import (
 	"math/rand"
 	"reflect"
 	"runtime"
+	"sort"
+	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -15,6 +17,42 @@ func init() {
 // MtSort sort in multi threads
 func MtSort(x interface{}, less func(i, j int) bool) {
 	MtSort4(x, less)
+}
+
+func MtIsSorted(x interface{}, less func(i, j int) bool) bool {
+	N := reflect.ValueOf(x).Len()
+	var res uint32 = 1
+	edgeIdx := []int{}
+	edgeMtx := sync.Mutex{}
+	Together(func(threadIdx, numThreads int) {
+		tN := N / numThreads
+		start := threadIdx * tN
+		end := (threadIdx + 1) * tN
+		if threadIdx == numThreads-1 {
+			end = N
+		}
+		WithMutex(&edgeMtx, func() {
+			edgeIdx = append(edgeIdx, start, end)
+		})
+		for i := start + 1; atomic.LoadUint32(&res) > 0 && i < end; i++ {
+			if less(i, i-1) {
+				atomic.StoreUint32(&res, 0)
+				break
+			}
+		}
+	})
+	if res == 0 {
+		return false
+	}
+	sort.Slice(edgeIdx, func(i, j int) bool {
+		return edgeIdx[i] < edgeIdx[j]
+	})
+	for i := 1; i < len(edgeIdx); i++ {
+		if less(i, i-1) {
+			return false
+		}
+	}
+	return true
 }
 
 // MtSort sort in multi threads
@@ -211,6 +249,9 @@ func MtSort3(x interface{}, less func(i, j int) bool) {
 
 // MtSort4 q sort mt mid pivot, first rand pivot
 func MtSort4(x interface{}, less func(i, j int) bool) {
+	if MtIsSorted(x, less) {
+		return
+	}
 	threadLimit := (1 << 10)
 	swap := reflect.Swapper(x)
 	N := reflect.ValueOf(x).Len()
