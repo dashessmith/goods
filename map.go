@@ -16,7 +16,7 @@ func MapSortedKeys(m interface{}, dstSlice interface{}, less func(i, j int) bool
 	MtSort(rd.Interface(), less)
 }
 
-func MapKeys(m interface{}, dstSlice interface{}, less func(i, j int) bool) {
+func MapKeys(m interface{}, dstSlice interface{}) {
 	rm := reflect.ValueOf(m)
 	keys := rm.MapKeys()
 	if len(keys) <= 0 {

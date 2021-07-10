@@ -14,9 +14,7 @@ func Test_map(t *testing.T) {
 		`4`: `4`,
 	}
 	keys := []string{}
-	util.MapKeys(m, &keys, func(i, j int) bool {
-		return keys[i] < keys[j]
-	})
+	util.MapKeys(m, &keys)
 	t.Logf("%v\n", keys)
 	util.MapSortedKeys(m, &keys, func(i, j int) bool {
 		return keys[i] < keys[j]
