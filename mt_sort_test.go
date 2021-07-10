@@ -15,8 +15,8 @@ func Test_MtSort(t *testing.T) {
 	N := 5000000
 	arr := make([]int, N)
 	for i := 0; i < N; i++ {
-		//arr[i] = i
-		//arr[i] = i
+		// arr[i] = i
+		// arr[i] = i
 		arr[i] = rand.Intn(N)
 	}
 	arr1 := util.CopyInt(arr)
