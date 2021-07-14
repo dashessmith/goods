@@ -12,41 +12,30 @@ import (
 
 func Test_MtSort(t *testing.T) {
 	rand.Seed(time.Now().Unix())
-	N := 5000000
+	N := 100000000
 	arr := make([]int, N)
 	for i := 0; i < N; i++ {
-		// arr[i] = i
-		// arr[i] = i
-		arr[i] = rand.Intn(N)
+		//arr[i] = rand.Intn(N)
+		arr[i] = i
 	}
-	arr1 := util.CopyInt(arr)
-	arr2 := util.CopyInt(arr)
-	arr3 := util.CopyInt(arr)
-	t.Logf("sort1 start\n")
-	d1 := util.Elapse(func() {
-		util.MtSort1(arr1, func(i, j int) bool {
-			return arr1[i] < arr1[j]
+
+	tsort := func(tag string, sortf func(interface{}, func(int, int) bool)) {
+		arrcp := util.CopyInt(arr)
+		t.Logf("%v start\n", tag)
+		d3 := util.Elapse(func() {
+			sortf(arrcp, func(i, j int) bool {
+				return arrcp[i] < arrcp[j]
+			})
 		})
-	})
-	t.Logf("sort2 start\n")
-	d2 := util.Elapse(func() {
-		util.MtSort2(arr2, func(i, j int) bool {
-			return arr2[i] < arr2[j]
-		})
-	})
-	t.Logf("sort3 start\n")
-	d3 := util.Elapse(func() {
-		util.MtSort4(arr3, func(i, j int) bool {
-			return arr3[i] < arr3[j]
-		})
-	})
+		assert.True(t, util.MtIsSorted(arrcp, func(i, j int) bool { return arrcp[i] < arrcp[j] }))
+		t.Logf("%v = %v\n", tag, d3)
+	}
+	// tsort(`mt sort 1`, util.MtSort1)
+	// tsort(`mt sort 2`, util.MtSort2)
+	tsort(`mt sort 4`, util.MtSort4)
+
 	t.Logf("sort end\n")
-	assert.Equal(t, arr1, arr2)
-	assert.Equal(t, arr1, arr3)
-	assert.True(t, util.MtIsSorted(arr1, func(i, j int) bool { return arr1[i] < arr1[j] }))
-	assert.True(t, util.MtIsSorted(arr2, func(i, j int) bool { return arr2[i] < arr2[j] }))
-	assert.True(t, util.MtIsSorted(arr3, func(i, j int) bool { return arr3[i] < arr3[j] }))
-	t.Logf("d1 = %v, d2 = %v, d3 = %v\n", d1, d2, d3)
+
 }
 
 func Test_MtSort2(t *testing.T) {
@@ -149,7 +138,7 @@ func Test_isSorted(t *testing.T) {
 	N := 50000000
 	arr := make([]int, N+1)
 	for i := 0; i < N; i++ {
-		arr[i] = i
+		arr[i] = rand.Intn(N)
 	}
 	arr = append(arr, 0)
 	r1 := true
