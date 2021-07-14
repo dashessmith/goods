@@ -15,7 +15,7 @@ func Test_MtSort(t *testing.T) {
 	N := 100000000
 	arr := make([]int, N)
 	for i := 0; i < N; i++ {
-		//arr[i] = rand.Intn(N)
+		// arr[i] = rand.Intn(N)
 		arr[i] = i
 	}
 
@@ -35,7 +35,6 @@ func Test_MtSort(t *testing.T) {
 	tsort(`mt sort 4`, util.MtSort4)
 
 	t.Logf("sort end\n")
-
 }
 
 func Test_MtSort2(t *testing.T) {
