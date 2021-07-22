@@ -49,5 +49,5 @@ func ULID() string {
 }
 
 func ULIDInt64() int64 {
-	return time.Now().UnixNano()
+	return <-chidint64
 }
