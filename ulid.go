@@ -9,7 +9,10 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-var chid chan string = make(chan string, 1024)
+var (
+	chid      chan string = make(chan string, 1024)
+	chidint64 chan int64  = make(chan int64, 1024)
+)
 
 func init() {
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(int64(ulid.Timestamp(time.Now())))), 0)
@@ -28,8 +31,23 @@ func init() {
 			}
 		}
 	}()
+
+	go func() {
+		var lastid int64
+		for {
+			id := time.Now().UnixNano()
+			if id > lastid {
+				chidint64 <- id
+				lastid = id
+			}
+		}
+	}()
 }
 
 func ULID() string {
 	return <-chid
+}
+
+func ULIDInt64() int64 {
+	return time.Now().UnixNano()
 }
