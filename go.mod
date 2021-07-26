@@ -1,4 +1,4 @@
-module github.com/dashessmith/util
+module github.com/dashessmith/goods
 
 go 1.16
 
