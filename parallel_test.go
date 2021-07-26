@@ -1,10 +1,10 @@
-package util_test
+package goods_test
 
 import (
 	"math/rand"
 	"testing"
 
-	"github.com/dashessmith/util"
+	"github.com/dashessmith/goods"
 )
 
 func Test_Parall(t *testing.T) {
@@ -15,15 +15,15 @@ func Test_Parall(t *testing.T) {
 	for i := 0; i < N; i++ {
 		arr[i] = rand.Intn(N)
 	}
-	d1 := util.Elapse(func() {
+	d1 := goods.Elapse(func() {
 		for _, n := range arr {
 			if n == search {
 				return
 			}
 		}
 	})
-	d2 := util.Elapse(func() {
-		res := util.AnyOf_P(N, func(i int) bool {
+	d2 := goods.Elapse(func() {
+		res := goods.AnyOf_P(N, func(i int) bool {
 			return arr[i] == search
 		})
 		t.Logf(" yes ? %v\n ", res)

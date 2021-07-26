@@ -1,4 +1,4 @@
-package util
+package goods
 
 func UniqueInt64f(srcLength int, get func(index int) int64) (res []int64) {
 	mask := map[int64]bool{}

@@ -1,19 +1,19 @@
-package util_test
+package goods_test
 
 import (
 	"testing"
 
-	"github.com/dashessmith/util"
+	"github.com/dashessmith/goods"
 )
 
 func Test_ReverseSlice(t *testing.T) {
 	var arr []int
-	util.ReverseSlice(arr)
+	goods.ReverseSlice(arr)
 	t.Logf("arr = %v\n", arr)
 	arr = []int{1}
-	util.ReverseSlice(arr)
+	goods.ReverseSlice(arr)
 	t.Logf("arr = %v\n", arr)
 	arr = []int{1, 2, 3}
-	util.ReverseSlice(arr)
+	goods.ReverseSlice(arr)
 	t.Logf("arr = %v\n", arr)
 }

@@ -1,4 +1,4 @@
-package util
+package goods
 
 func AnyOf_P(N int, f func(i int) bool) (yes bool) {
 	wg := WaitGroup{}

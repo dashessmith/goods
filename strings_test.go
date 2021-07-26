@@ -1,12 +1,12 @@
-package util_test
+package goods_test
 
 import (
 	"testing"
 
-	"github.com/dashessmith/util"
+	"github.com/dashessmith/goods"
 )
 
 func Test_stringsjoin(t *testing.T) {
-	s := util.JoinInts([]int{1, 2, 3}, "-")
+	s := goods.JoinInts([]int{1, 2, 3}, "-")
 	t.Logf("%v\n", s)
 }

@@ -1,16 +1,16 @@
-package util_test
+package goods_test
 
 import (
 	"testing"
 
-	"github.com/dashessmith/util"
+	"github.com/dashessmith/goods"
 )
 
 func Test_encrypt(t *testing.T) {
 	str := "hello world"
 	key := [32]byte{0}
-	encrypted := util.Encrypt([]byte(str), key[:])
+	encrypted := goods.Encrypt([]byte(str), key[:])
 	t.Logf("%s\n", encrypted)
-	decrypted := util.Decrypt(encrypted, key[:])
+	decrypted := goods.Decrypt(encrypted, key[:])
 	t.Logf("%s\n", decrypted)
 }

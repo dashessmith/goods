@@ -1,18 +1,18 @@
-package util_test
+package goods_test
 
 import (
 	"testing"
 	"time"
 
-	"github.com/dashessmith/util"
+	"github.com/dashessmith/goods"
 )
 
 func Test_speed(t *testing.T) {
 	go func() {
-		util.SpeedSampleF("test1", func() {
+		goods.SpeedSampleF("test1", func() {
 			time.Sleep(time.Second)
 		})
-		for ss := util.NewSpeedSample(`test`); ; {
+		for ss := goods.NewSpeedSample(`test`); ; {
 			ss.Pause()
 			time.Sleep(time.Second)
 			ss.Resume()

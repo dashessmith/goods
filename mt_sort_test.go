@@ -1,4 +1,4 @@
-package util_test
+package goods_test
 
 import (
 	"math/rand"
@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dashessmith/util"
+	"github.com/dashessmith/goods"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,19 +20,19 @@ func Test_MtSort(t *testing.T) {
 	}
 
 	tsort := func(tag string, sortf func(interface{}, func(int, int) bool)) {
-		arrcp := util.CopyInt(arr)
+		arrcp := goods.CopyInt(arr)
 		t.Logf("%v start\n", tag)
-		d3 := util.Elapse(func() {
+		d3 := goods.Elapse(func() {
 			sortf(arrcp, func(i, j int) bool {
 				return arrcp[i] < arrcp[j]
 			})
 		})
-		assert.True(t, util.MtIsSorted(arrcp, func(i, j int) bool { return arrcp[i] < arrcp[j] }))
+		assert.True(t, goods.MtIsSorted(arrcp, func(i, j int) bool { return arrcp[i] < arrcp[j] }))
 		t.Logf("%v = %v\n", tag, d3)
 	}
-	// tsort(`mt sort 1`, util.MtSort1)
-	// tsort(`mt sort 2`, util.MtSort2)
-	tsort(`mt sort 4`, util.MtSort4)
+	// tsort(`mt sort 1`, goods.MtSort1)
+	// tsort(`mt sort 2`, goods.MtSort2)
+	tsort(`mt sort 4`, goods.MtSort4)
 
 	t.Logf("sort end\n")
 }
@@ -45,14 +45,14 @@ func Test_MtSort2(t *testing.T) {
 		origin[i] = rand.Intn(N)
 	}
 	origin = []int{3, 5, 9, 7, 7, 1, 9, 4, 1, 9}
-	arr := util.CopyInt(origin)
+	arr := goods.CopyInt(origin)
 
-	d2 := util.Elapse(func() {
-		util.MtSort2(arr, func(i, j int) bool {
+	d2 := goods.Elapse(func() {
+		goods.MtSort2(arr, func(i, j int) bool {
 			return arr[i] < arr[j]
 		})
 	})
-	if !assert.True(t, sort.IsSorted(util.SortInts(arr))) {
+	if !assert.True(t, sort.IsSorted(goods.SortInts(arr))) {
 		t.Fatalf("not sorted origin %v, after %v\n", origin, arr)
 	}
 	t.Logf("d1 = %v\n", d2)
@@ -68,14 +68,14 @@ func Test_MtSort3(t *testing.T) {
 	}
 	// origin = []int{7, 9, 3, 9, 0, 7, 2, 4, 0, 8}
 	// origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
-	arr := util.CopyInt(origin)
+	arr := goods.CopyInt(origin)
 
-	d2 := util.Elapse(func() {
-		util.MtSort1(arr, func(i, j int) bool {
+	d2 := goods.Elapse(func() {
+		goods.MtSort1(arr, func(i, j int) bool {
 			return arr[i] < arr[j]
 		})
 	})
-	if !assert.True(t, sort.IsSorted(util.SortInts(arr))) {
+	if !assert.True(t, sort.IsSorted(goods.SortInts(arr))) {
 		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
 	}
 	t.Logf("d1 = %v\n", d2)
@@ -92,14 +92,14 @@ func Test_MtSort4(t *testing.T) {
 	}
 	// origin = []int{7, 9, 3, 9, 0, 7, 2, 4, 0, 8}
 	// origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
-	arr := util.CopyInt(origin)
+	arr := goods.CopyInt(origin)
 
-	d2 := util.Elapse(func() {
-		util.MtSort4(arr, func(i, j int) bool {
+	d2 := goods.Elapse(func() {
+		goods.MtSort4(arr, func(i, j int) bool {
 			return arr[i] < arr[j]
 		})
 	})
-	if !assert.True(t, sort.IsSorted(util.SortInts(arr))) {
+	if !assert.True(t, sort.IsSorted(goods.SortInts(arr))) {
 		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
 	}
 	t.Logf("d1 = %v\n", d2)
@@ -116,14 +116,14 @@ func Test_MtSortOrigin(t *testing.T) {
 	}
 	// origin = []int{7, 9, 3, 9, 0, 7, 2, 4, 0, 8}
 	// origin = []int{5, 8, 4, 7, 1, 2, 0, 1, 3, 2}
-	arr := util.CopyInt(origin)
+	arr := goods.CopyInt(origin)
 
-	d2 := util.Elapse(func() {
+	d2 := goods.Elapse(func() {
 		sort.Slice(arr, func(i, j int) bool {
 			return arr[i] < arr[j]
 		})
 	})
-	if !assert.True(t, sort.IsSorted(util.SortInts(arr))) {
+	if !assert.True(t, sort.IsSorted(goods.SortInts(arr))) {
 		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
 	}
 	t.Logf("d1 = %v\n", d2)
@@ -142,11 +142,11 @@ func Test_isSorted(t *testing.T) {
 	arr = append(arr, 0)
 	r1 := true
 	r2 := true
-	d1 := util.Elapse(func() {
-		r1 = sort.IsSorted(util.SortInts(arr))
+	d1 := goods.Elapse(func() {
+		r1 = sort.IsSorted(goods.SortInts(arr))
 	})
-	d2 := util.Elapse(func() {
-		r2 = util.MtIsSorted(arr, func(i, j int) bool { return arr[i] < arr[j] })
+	d2 := goods.Elapse(func() {
+		r2 = goods.MtIsSorted(arr, func(i, j int) bool { return arr[i] < arr[j] })
 	})
 	t.Logf("d1 = %v, d2 = %v\n", d1, d2)
 	assert.Equal(t, r1, r2)

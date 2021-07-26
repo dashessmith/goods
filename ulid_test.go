@@ -1,19 +1,19 @@
-package util_test
+package goods_test
 
 import (
 	"testing"
 
-	"github.com/dashessmith/util"
+	"github.com/dashessmith/goods"
 )
 
 func Test_ulid(t *testing.T) {
 	for i := 0; i < 100; i++ {
-		t.Logf("%v\n", util.ULID())
+		t.Logf("%v\n", goods.ULID())
 	}
 }
 
 func Test_ulidint64(t *testing.T) {
 	for i := 0; i < 100; i++ {
-		t.Logf("%v\n", util.ULIDInt64())
+		t.Logf("%v\n", goods.ULIDInt64())
 	}
 }
