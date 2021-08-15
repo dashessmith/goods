@@ -99,5 +99,7 @@ func (ss *SpeedSample) Flush() {
 func SpeedSampleF(tag string, f func()) {
 	ss := NewSpeedSample(tag)
 	defer ss.Flush()
-	f()
+	if f != nil {
+		f()
+	}
 }
