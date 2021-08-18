@@ -7,7 +7,7 @@ func MinInt(a, b int) int {
 	return b
 }
 
-func MaxInt(ints []int) (ret int) {
+func MaxInt(ints ...int) (ret int) {
 	for _, n := range ints {
 		if n > ret {
 			ret = n
