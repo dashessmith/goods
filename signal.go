@@ -1,9 +1,11 @@
 package goods
 
 import (
+	"context"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 type WithSignalInterface interface {
@@ -24,6 +26,13 @@ func WithSignal(x WithSignalInterface) (err error) {
 
 func UniqueRunWithSignal(svc WithSignalInterface, tag string) (err error) {
 	WithFlock(tag, func() {
+		err = WithSignal(svc)
+	})
+	return
+}
+
+func UniqueRunWithSignalContext(ctx context.Context, delay time.Duration, svc WithSignalInterface, tag string) (err error) {
+	WithFlockContext(ctx, delay, tag, func() {
 		err = WithSignal(svc)
 	})
 	return
