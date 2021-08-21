@@ -17,3 +17,9 @@ func AssertTrue(t *testing.T, b bool) {
 		t.Fatal()
 	}
 }
+
+func AssertEqual(t *testing.T, x interface{}, expect interface{}) {
+	if !assert.Equal(t, expect, x) {
+		t.Fatal()
+	}
+}
