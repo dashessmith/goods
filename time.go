@@ -1,6 +1,10 @@
 package goods
 
-import "time"
+import (
+	"time"
+
+	"github.com/beevik/ntp"
+)
 
 // 一日开始时间 2021-5-26 19:20 ==> 2021-5-26 00:00
 func TimeFloorDay(t time.Time) time.Time {
@@ -37,4 +41,14 @@ func TimeFloorMonth(t time.Time) time.Time {
 // 下月开始时间
 func TimeCeilMonth(t time.Time) time.Time {
 	return TimeFloorMonth(t).AddDate(0, 1, 0)
+}
+
+func NtpNow(addr string) (now time.Time, err error) {
+	if len(addr) <= 0 {
+		addr = "cn.pool.ntp.org"
+		// addr = "0.beevik-ntp.pool.ntp.org"
+	}
+	// response, err := ntp.Query("0.beevik-ntp.pool.ntp.org")
+	now, err = ntp.Time(addr)
+	return
 }
