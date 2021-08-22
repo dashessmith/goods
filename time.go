@@ -1,6 +1,7 @@
 package goods
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/beevik/ntp"
@@ -43,13 +44,34 @@ func TimeCeilMonth(t time.Time) time.Time {
 	return TimeFloorMonth(t).AddDate(0, 1, 0)
 }
 
+var nptaddrs = []string{
+	"cn.pool.ntp.org",
+	"time.windows.com",
+	"ntp.aliyun.com",
+	"0.beevik-ntp.pool.ntp.org",
+}
+
 func NtpNow(addr string) (now time.Time, err error) {
-	if len(addr) <= 0 {
-		// addr = "cn.pool.ntp.org"
-		addr = "time.windows.com"
-		// addr = "0.beevik-ntp.pool.ntp.org"
+	if len(addr) > 0 {
+		return ntp.Time(addr)
 	}
-	// response, err := ntp.Query("0.beevik-ntp.pool.ntp.org")
-	now, err = ntp.Time(addr)
+	ch := make(chan time.Time, 1)
+	for _, addr := range nptaddrs {
+		addr := addr
+		go func() {
+			now, err = ntp.Time(addr)
+			if err == nil {
+				select {
+				case ch <- now:
+				default:
+				}
+			}
+		}()
+	}
+	select {
+	case now = <-ch:
+	case <-time.After(10 * time.Second):
+		err = fmt.Errorf("timeout")
+	}
 	return
 }
