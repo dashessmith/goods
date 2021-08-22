@@ -45,7 +45,8 @@ func TimeCeilMonth(t time.Time) time.Time {
 
 func NtpNow(addr string) (now time.Time, err error) {
 	if len(addr) <= 0 {
-		addr = "cn.pool.ntp.org"
+		// addr = "cn.pool.ntp.org"
+		addr = "time.windows.com"
 		// addr = "0.beevik-ntp.pool.ntp.org"
 	}
 	// response, err := ntp.Query("0.beevik-ntp.pool.ntp.org")
