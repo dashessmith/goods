@@ -19,7 +19,11 @@ def push():
     exec("go mod tidy")
     exec("gofumpt -s -w .")
     exec("git add .")
-    exec("git commit --allow-empty-message -m ''")
+    if len(sys.argv) > 1:
+        exec(f"git commit -m '{sys.argv[1]}'")
+    else:
+        exec("git commit --allow-empty-message")
+
     exec("git push")
     exec(
         f'gh release create {newtag} --notes "casual release"')
