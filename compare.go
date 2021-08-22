@@ -1,13 +1,19 @@
 package goods
 
-func MinInt(a, b int) int {
-	if a < b {
-		return a
+import "math"
+
+func MinInt(ints ...int) (ret int) {
+	ret = math.MaxInt
+	for _, n := range ints {
+		if n < ret {
+			n = ret
+		}
 	}
-	return b
+	return
 }
 
 func MaxInt(ints ...int) (ret int) {
+	ret = math.MinInt
 	for _, n := range ints {
 		if n > ret {
 			ret = n
