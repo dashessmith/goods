@@ -31,7 +31,7 @@ func UniqueIntf(srcLength int, get func(index int) int, mask map[int]bool) (res 
 }
 
 func UniqueInt(src []int) (res []int) {
-	return UniqueIntf(len(src), func(index int) int { return src[index] })
+	return UniqueIntf(len(src), func(index int) int { return src[index] }, nil)
 }
 
 func UniqueStrings(strs []string) (res []string) {
