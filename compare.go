@@ -6,7 +6,7 @@ func MinInt(ints ...int) (ret int) {
 	ret = math.MaxInt
 	for _, n := range ints {
 		if n < ret {
-			n = ret
+			ret = n
 		}
 	}
 	return
