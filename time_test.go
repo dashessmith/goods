@@ -5,7 +5,7 @@ import (
 )
 
 func TestNtpNow(t *testing.T) {
-	now, err := NtpNow(`time.windows.com`)
+	now, err := NtpNow(``)
 	AssertNoError(t, err)
 	t.Logf("%v\n", now)
 }
