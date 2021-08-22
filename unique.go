@@ -17,12 +17,12 @@ func UniqueInt64(src []int64) (res []int64) {
 	return UniqueInt64f(len(src), func(index int) int64 { return src[index] })
 }
 
-func UniqueIntf(srcLength int, get func(index int) int) (res []int) {
-	mask := map[int]bool{}
+func UniqueIntf(srcLength int, get func(index int) int, mask map[int]bool) (res []int) {
+	if mask == nil {
+		mask = map[int]bool{}
+	}
 	for i := 0; i < srcLength; i++ {
-		if n := get(i); mask[n] {
-			continue
-		} else {
+		if n := get(i); !mask[n] {
 			mask[n] = true
 			res = append(res, n)
 		}
