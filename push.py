@@ -5,6 +5,7 @@ from time import gmtime, strftime
 
 
 def exec(cmd):
+    print(f'executing cmd: {cmd}')
     code = os.system(cmd)
     if code != 0:
         sys.exit(code)
