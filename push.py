@@ -22,11 +22,10 @@ def push():
     if len(sys.argv) > 1:
         exec(f"git commit -m '{sys.argv[1]}'")
     else:
-        exec("git commit --allow-empty-message")
+        exec("git commit --allow-empty-message -m ''")
 
     exec("git push")
-    exec(
-        f'gh release create {newtag} --notes "casual release"')
+    exec(f'gh release create {newtag} --notes "casual release"')
     exec("git pull --tags")
 
 
