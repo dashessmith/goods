@@ -62,31 +62,29 @@ func (tc *Timedcache) AsyncGet(key string, asyncDefault interface{}, fetchfunc f
 		})
 		item = actual.(*timedcacheitem)
 	}
+	x = item.x
+	if item.fetching {
+		return
+	}
 	WithMutex(&item.mtx, func() {
-		x = item.x
 		if item.et.After(time.Now()) {
 			return
 		}
+		if item.fetching {
+			return
+		}
+		item.fetching = true
 		go func() {
-			WithMutex(&item.mtx, func() {
-				if item.et.After(time.Now()) {
-					return
-				}
-				if item.fetching {
-					return
-				}
-				item.fetching = true
-				defer func() {
-					item.fetching = false
-				}()
-				var kt time.Duration
-				x, kt, err = fetchfunc()
-				if err != nil {
-					return
-				}
-				item.x = x
-				item.et = time.Now().Add(kt)
-			})
+			defer func() {
+				item.fetching = false
+			}()
+			var kt time.Duration
+			x, kt, err = fetchfunc()
+			if err != nil {
+				return
+			}
+			item.x = x
+			item.et = time.Now().Add(kt)
 		}()
 	})
 	return
