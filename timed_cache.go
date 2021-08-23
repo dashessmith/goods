@@ -6,9 +6,10 @@ import (
 )
 
 type timedcacheitem struct {
-	x   interface{}
-	et  time.Time
-	mtx sync.Mutex
+	x        interface{}
+	fetching bool
+	et       time.Time
+	mtx      sync.Mutex
 }
 
 type Timedcache struct {
@@ -43,6 +44,50 @@ func (tc *Timedcache) Get(key string, fetchfunc func() (x interface{}, kt time.D
 		}
 		item.x = x
 		item.et = time.Now().Add(kt)
+	})
+	return
+}
+
+func (tc *Timedcache) AsyncGet(key string, asyncDefault interface{}, fetchfunc func() (x interface{}, kt time.Duration, err error)) (x interface{}, err error) {
+	var item *timedcacheitem
+	actual, _ := tc.data.Load(key)
+	if actual != nil {
+		item = actual.(*timedcacheitem)
+		if item.et.After(time.Now()) {
+			return item.x, nil
+		}
+	} else {
+		actual, _ = tc.data.LoadOrStore(key, &timedcacheitem{
+			x: asyncDefault,
+		})
+		item = actual.(*timedcacheitem)
+	}
+	WithMutex(&item.mtx, func() {
+		x = item.x
+		if item.et.After(time.Now()) {
+			return
+		}
+		go func() {
+			WithMutex(&item.mtx, func() {
+				if item.et.After(time.Now()) {
+					return
+				}
+				if item.fetching {
+					return
+				}
+				item.fetching = true
+				defer func() {
+					item.fetching = false
+				}()
+				var kt time.Duration
+				x, kt, err = fetchfunc()
+				if err != nil {
+					return
+				}
+				item.x = x
+				item.et = time.Now().Add(kt)
+			})
+		}()
 	})
 	return
 }

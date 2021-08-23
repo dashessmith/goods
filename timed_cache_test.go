@@ -51,3 +51,21 @@ func Test_get(t *testing.T) {
 	})
 	t.Logf("elapse = %v\n", d)
 }
+
+func Test_asyncget(t *testing.T) {
+	// 56 seconds
+	cache := goods.NewTimedcache()
+	x, err := cache.AsyncGet("test", 1, func() (x interface{}, kt time.Duration, err error) {
+		time.Sleep(time.Second)
+		return 2, time.Minute, nil
+	})
+	goods.AssertNoError(t, err)
+	goods.AssertEqual(t, x, 1)
+	time.Sleep(2 * time.Second)
+	x, err = cache.AsyncGet("test", 1, func() (x interface{}, kt time.Duration, err error) {
+		time.Sleep(time.Second)
+		return 2, time.Minute, nil
+	})
+	goods.AssertNoError(t, err)
+	goods.AssertEqual(t, x, 2)
+}
