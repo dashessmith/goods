@@ -75,3 +75,11 @@ func NtpNow(addr string) (now time.Time, err error) {
 	}
 	return
 }
+
+func WithDuration(d time.Duration, f func() bool) {
+	for t := time.Now(); t.Add(d).After(time.Now()); {
+		if f() {
+			return
+		}
+	}
+}
