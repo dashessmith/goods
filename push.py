@@ -28,6 +28,7 @@ def push():
     exec("git push")
 
     exec(f'gh release create {newtag} -n ""')
+
     exec("git pull --tags")
 
 
