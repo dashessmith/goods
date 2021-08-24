@@ -26,7 +26,7 @@ def push():
         exec("git commit --allow-empty-message -m ''")
 
     exec("git push")
-    exec(f'gh release create {newtag} --notes "casual release"')
+    exec(f'gh release create {newtag} -n ""')
     exec("git pull --tags")
 
 
