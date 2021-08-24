@@ -39,7 +39,7 @@ func RandScaleInt(scale int) int {
 	return rand.Intn(high) + low
 }
 
-const randstr = `abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ`
+const randstr = `abcdefghijklmnopqrstuvwxyz_ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`
 
 func RandScaleStr(scale int) string {
 	tmp := make([]rune, scale)
