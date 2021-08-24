@@ -7,12 +7,7 @@ import (
 	"sort"
 	"sync"
 	"sync/atomic"
-	"time"
 )
-
-func init() {
-	rand.Seed(time.Now().Unix())
-}
 
 // MtSort sort in multi threads
 func MtSort(x interface{}, less func(i, j int) bool) {

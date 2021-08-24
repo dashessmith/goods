@@ -1,7 +1,6 @@
 package goods
 
 import (
-	"math"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -51,33 +50,4 @@ func ULID() string {
 
 func ULIDInt64() int64 {
 	return <-chidint64
-}
-
-func RandScaleInt(scale int) int {
-	if scale < 1 {
-		panic("scale should >= 1")
-	}
-	high := int(math.Pow(10, float64(scale)))
-	low := high / 10
-	high -= low
-	return rand.Intn(high) + low
-}
-
-func RandScaleIntWithout(scale int, them ...int) int {
-	if scale < 1 {
-		panic("scale should >= 1")
-	}
-	var res int = 0
-	for scale > 0 {
-		n := rand.Intn(10)
-		if In(n, them) {
-			continue
-		}
-		if res <= 0 && n <= 0 {
-			continue
-		}
-		res = res*10 + n
-		scale--
-	}
-	return res
 }
