@@ -1,6 +1,14 @@
 package goods
 
-import "strings"
+import (
+	"net/mail"
+	"strings"
+)
+
+func ValidEmail(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+}
 
 func EmailTokens(email string) (prefix string, suffix string) {
 	tokens := strings.Split(email, `@`)
