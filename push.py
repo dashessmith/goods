@@ -12,6 +12,7 @@ def exec(cmd):
 
 
 def push():
+
     maxtag = subprocess.check_output(
         "git describe --abbrev=0 --tags").decode('utf8').strip()
     tokens = maxtag.split('.')
