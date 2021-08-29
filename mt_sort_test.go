@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/dashessmith/goods"
-	"github.com/stretchr/testify/assert"
 )
 
 func Test_MtSort(t *testing.T) {
@@ -19,15 +18,15 @@ func Test_MtSort(t *testing.T) {
 		arr[i] = i
 	}
 
-	tsort := func(tag string, sortf func(interface{}, func(int, int) bool)) {
+	tsort := func(tag string, sortf func(interface{}, func(int, int) bool, int)) {
 		arrcp := goods.CopyInt(arr)
 		t.Logf("%v start\n", tag)
 		d3 := goods.Elapse(func() {
 			sortf(arrcp, func(i, j int) bool {
 				return arrcp[i] < arrcp[j]
-			})
+			}, goods.MTSORT_THREADLIMIT_FOR_INTS)
 		})
-		assert.True(t, goods.MtIsSorted(arrcp, func(i, j int) bool { return arrcp[i] < arrcp[j] }))
+		goods.AssertTrue(t, goods.MtIsSorted(arrcp, func(i, j int) bool { return arrcp[i] < arrcp[j] }))
 		t.Logf("%v = %v\n", tag, d3)
 	}
 	// tsort(`mt sort 1`, goods.MtSort1)
@@ -52,9 +51,7 @@ func Test_MtSort2(t *testing.T) {
 			return arr[i] < arr[j]
 		})
 	})
-	if !assert.True(t, sort.IsSorted(goods.SortInts(arr))) {
-		t.Fatalf("not sorted origin %v, after %v\n", origin, arr)
-	}
+	goods.AssertTrue(t, sort.IsSorted(goods.SortInts(arr)))
 	t.Logf("d1 = %v\n", d2)
 }
 
@@ -75,9 +72,7 @@ func Test_MtSort3(t *testing.T) {
 			return arr[i] < arr[j]
 		})
 	})
-	if !assert.True(t, sort.IsSorted(goods.SortInts(arr))) {
-		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
-	}
+	goods.AssertTrue(t, sort.IsSorted(goods.SortInts(arr)))
 	t.Logf("d1 = %v\n", d2)
 }
 
@@ -97,9 +92,9 @@ func Test_MtSort4(t *testing.T) {
 	d2 := goods.Elapse(func() {
 		goods.MtSort4(arr, func(i, j int) bool {
 			return arr[i] < arr[j]
-		})
+		}, goods.MTSORT_THREADLIMIT_FOR_INTS)
 	})
-	if !assert.True(t, sort.IsSorted(goods.SortInts(arr))) {
+	if !goods.AssertTrue(t, sort.IsSorted(goods.SortInts(arr))) {
 		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
 	}
 	t.Logf("d1 = %v\n", d2)
@@ -108,7 +103,7 @@ func Test_MtSort4(t *testing.T) {
 func Test_MtSortOrigin(t *testing.T) {
 	rand.Seed(time.Now().Unix())
 
-	N := 100000000
+	N := 1000000
 	origin := make([]int, N)
 	for i := 0; i < N; i++ {
 		origin[i] = rand.Intn(N)
@@ -123,7 +118,7 @@ func Test_MtSortOrigin(t *testing.T) {
 			return arr[i] < arr[j]
 		})
 	})
-	if !assert.True(t, sort.IsSorted(goods.SortInts(arr))) {
+	if !goods.AssertTrue(t, sort.IsSorted(goods.SortInts(arr))) {
 		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
 	}
 	t.Logf("d1 = %v\n", d2)
@@ -149,5 +144,5 @@ func Test_isSorted(t *testing.T) {
 		r2 = goods.MtIsSorted(arr, func(i, j int) bool { return arr[i] < arr[j] })
 	})
 	t.Logf("d1 = %v, d2 = %v\n", d1, d2)
-	assert.Equal(t, r1, r2)
+	goods.AssertEqual(t, r1, r2)
 }

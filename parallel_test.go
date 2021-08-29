@@ -9,7 +9,7 @@ import (
 
 func Test_Parall(t *testing.T) {
 	t.Logf("test parallel")
-	N := 1000000000
+	N := 10000000
 	search := 100
 	arr := make([]int, N)
 	for i := 0; i < N; i++ {

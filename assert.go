@@ -12,10 +12,12 @@ func AssertNoError(t *testing.T, err error) {
 	}
 }
 
-func AssertTrue(t *testing.T, b bool) {
+func AssertTrue(t *testing.T, b bool) bool {
 	if !assert.True(t, b) {
 		t.Fatal()
+		return false
 	}
+	return true
 }
 
 func AssertEqual(t *testing.T, x interface{}, expect interface{}) {

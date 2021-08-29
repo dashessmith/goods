@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/dashessmith/goods"
-	"github.com/stretchr/testify/assert"
 )
 
 func Test_NewTimedcache(t *testing.T) {
@@ -16,22 +15,22 @@ func Test_NewTimedcache(t *testing.T) {
 		return `cachevalue`, 10 * time.Millisecond, nil
 	}
 	v, err := cache.Get("", fetchf)
-	assert.NoError(t, err)
-	assert.Equal(t, v, `cachevalue`)
-	assert.Equal(t, 1, calltimes)
+	goods.AssertNoError(t, err)
+	goods.AssertEqual(t, v, `cachevalue`)
+	goods.AssertEqual(t, 1, calltimes)
 	_, _ = cache.Get("", fetchf)
-	assert.NoError(t, err)
-	assert.Equal(t, v, `cachevalue`)
-	assert.Equal(t, 1, calltimes)
+	goods.AssertNoError(t, err)
+	goods.AssertEqual(t, v, `cachevalue`)
+	goods.AssertEqual(t, 1, calltimes)
 	_, _ = cache.Get("", fetchf)
-	assert.NoError(t, err)
-	assert.Equal(t, v, `cachevalue`)
-	assert.Equal(t, 1, calltimes)
+	goods.AssertNoError(t, err)
+	goods.AssertEqual(t, v, `cachevalue`)
+	goods.AssertEqual(t, 1, calltimes)
 	time.Sleep(20 * time.Millisecond)
 	_, _ = cache.Get("", fetchf)
-	assert.NoError(t, err)
-	assert.Equal(t, v, `cachevalue`)
-	assert.Equal(t, 2, calltimes)
+	goods.AssertNoError(t, err)
+	goods.AssertEqual(t, v, `cachevalue`)
+	goods.AssertEqual(t, 2, calltimes)
 }
 
 func Test_get(t *testing.T) {
@@ -39,7 +38,7 @@ func Test_get(t *testing.T) {
 	cache := goods.NewTimedcache()
 	d := goods.Elapse(func() {
 		goods.Together(func(int, int) {
-			for i := 0; i < 100000000; i++ {
+			for i := 0; i < 1000000; i++ {
 				_, err := cache.Get("213", func() (x interface{}, kt time.Duration, err error) {
 					return 1, time.Hour, nil
 				})
