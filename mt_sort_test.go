@@ -96,9 +96,7 @@ func Test_MtSort4(t *testing.T) {
 			ThreadLimit: goods.MTSORT_THREADLIMIT_FOR_INTS,
 		})
 	})
-	if !goods.AssertTrue(t, sort.IsSorted(goods.SortInts(arr))) {
-		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
-	}
+	goods.AssertTrue(t, sort.IsSorted(goods.SortInts(arr)))
 	t.Logf("d2 = %v\n", d2)
 }
 
@@ -120,9 +118,7 @@ func Test_MtSortOrigin(t *testing.T) {
 			return arr[i] < arr[j]
 		})
 	})
-	if !goods.AssertTrue(t, sort.IsSorted(goods.SortInts(arr))) {
-		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
-	}
+	goods.AssertTrue(t, sort.IsSorted(goods.SortInts(arr)))
 	t.Logf("d1 = %v\n", d2)
 }
 
