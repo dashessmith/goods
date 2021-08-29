@@ -13,7 +13,9 @@ func MapSortedKeys(m interface{}, dstSlice interface{}, less func(i, j int) bool
 	rd := reflect.ValueOf(dstSlice).Elem()
 	rd.Set(reflect.MakeSlice(rd.Type(), 0, 0))
 	rd.Set(reflect.Append(rd, keys...))
-	MtSort(rd.Interface(), less, MTSORT_THREADLIMIT_FOR_INTS)
+	MtSort(rd.Interface(), less, &MtSortOption{
+		ThreadLimit: MTSORT_THREADLIMIT_FOR_INTS,
+	})
 }
 
 func MapKeys(m interface{}, dstSlice interface{}) {

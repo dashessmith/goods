@@ -13,12 +13,25 @@ const (
 	MTSORT_THREADLIMIT_FOR_INTS = (1 << 10)
 )
 
+type MtSortOption struct {
+	ThreadLimit       int
+	SkipCheckIsSorted bool
+}
+
 // MtSort sort in multi threads
-func MtSort(x interface{}, less func(i, j int) bool, threadLimit int) {
-	if threadLimit < 0 {
-		threadLimit = 0
+func MtSort(x interface{}, less func(i, j int) bool, opt ...*MtSortOption) {
+	var o *MtSortOption
+	if len(opt) > 0 {
+		o = opt[0]
+	} else {
+		o = &MtSortOption{
+			SkipCheckIsSorted: true,
+		}
 	}
-	MtSort4(x, less, threadLimit)
+	if o.ThreadLimit < 0 {
+		o.ThreadLimit = 0
+	}
+	MtSort4(x, less, o)
 }
 
 func MtIsSorted(x interface{}, less func(i, j int) bool) bool {
@@ -255,8 +268,8 @@ func MtSort3(x interface{}, less func(i, j int) bool) {
 }
 
 // MtSort4 q sort mt mid pivot, first rand pivot
-func MtSort4(x interface{}, less func(i, j int) bool, threadLimit int) {
-	if MtIsSorted(x, less) {
+func MtSort4(x interface{}, less func(i, j int) bool, opt *MtSortOption) {
+	if !opt.SkipCheckIsSorted && MtIsSorted(x, less) {
 		return
 	}
 	swap := reflect.Swapper(x)
@@ -298,7 +311,7 @@ func MtSort4(x interface{}, less func(i, j int) bool, threadLimit int) {
 
 		if pivot-left > right-pivot-1 {
 			if left < pivot {
-				if left+threadLimit < pivot {
+				if left+opt.ThreadLimit < pivot {
 					wg.GoOrCall(func() {
 						impl(left, pivot)
 					})
@@ -311,7 +324,7 @@ func MtSort4(x interface{}, less func(i, j int) bool, threadLimit int) {
 			}
 		} else {
 			if pivot+1 < right {
-				if pivot+1+threadLimit < right {
+				if pivot+1+opt.ThreadLimit < right {
 					wg.GoOrCall(func() {
 						impl(pivot+1, right)
 					})

@@ -18,20 +18,20 @@ func Test_MtSort(t *testing.T) {
 		arr[i] = i
 	}
 
-	tsort := func(tag string, sortf func(interface{}, func(int, int) bool, int)) {
+	tsort := func(tag string, sortf func(interface{}, func(int, int) bool, ...*goods.MtSortOption)) {
 		arrcp := goods.CopyInt(arr)
 		t.Logf("%v start\n", tag)
 		d3 := goods.Elapse(func() {
 			sortf(arrcp, func(i, j int) bool {
 				return arrcp[i] < arrcp[j]
-			}, goods.MTSORT_THREADLIMIT_FOR_INTS)
+			})
 		})
 		goods.AssertTrue(t, goods.MtIsSorted(arrcp, func(i, j int) bool { return arrcp[i] < arrcp[j] }))
 		t.Logf("%v = %v\n", tag, d3)
 	}
 	// tsort(`mt sort 1`, goods.MtSort1)
 	// tsort(`mt sort 2`, goods.MtSort2)
-	tsort(`mt sort 4`, goods.MtSort4)
+	tsort(`mt sort 4`, goods.MtSort)
 
 	t.Logf("sort end\n")
 }
@@ -92,12 +92,14 @@ func Test_MtSort4(t *testing.T) {
 	d2 := goods.Elapse(func() {
 		goods.MtSort4(arr, func(i, j int) bool {
 			return arr[i] < arr[j]
-		}, goods.MTSORT_THREADLIMIT_FOR_INTS)
+		}, &goods.MtSortOption{
+			ThreadLimit: goods.MTSORT_THREADLIMIT_FOR_INTS,
+		})
 	})
 	if !goods.AssertTrue(t, sort.IsSorted(goods.SortInts(arr))) {
 		t.Fatalf("not sorted\norigin %v\nafter %v\n", origin, arr)
 	}
-	t.Logf("d1 = %v\n", d2)
+	t.Logf("d2 = %v\n", d2)
 }
 
 func Test_MtSortOrigin(t *testing.T) {
