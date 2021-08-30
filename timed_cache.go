@@ -93,7 +93,7 @@ func (tc *Timedcache) AsyncGet(key string, asyncDefault interface{}, fetchfunc f
 	return
 }
 
-func (tc *Timedcache) AsyncGetf(key string, f func() interface{}, fetchfunc func() (x interface{}, kt time.Duration, err error)) (x interface{}, err error) {
+func (tc *Timedcache) AsyncGetf(key string, firstcall func() interface{}, fetchfunc func() (x interface{}, kt time.Duration, err error)) (x interface{}, err error) {
 	var item *timedcacheitem
 	actual, _ := tc.data.Load(key)
 	if actual != nil {
@@ -106,7 +106,11 @@ func (tc *Timedcache) AsyncGetf(key string, f func() interface{}, fetchfunc func
 		item = actual.(*timedcacheitem)
 		WithMutex(&item.mtx, func() {
 			if item.x == nil {
-				item.x = f()
+				if firstcall != nil {
+					item.x = firstcall()
+				} else {
+					item.x, _, _ = fetchfunc()
+				}
 			}
 		})
 	}
