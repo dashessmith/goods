@@ -21,3 +21,19 @@ func MaxInt(ints ...int) (ret int) {
 	}
 	return
 }
+
+func AllIntsEqual(ints ...int) (yes bool) {
+	for i := 1; i < len(ints); i++ {
+		if ints[i] != ints[0] {
+			return false
+		}
+	}
+	return true
+}
+
+func SumInts(ints ...int) (sum int) {
+	for _, i := range ints {
+		sum += i
+	}
+	return
+}
