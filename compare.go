@@ -37,3 +37,13 @@ func SumInts(ints ...int) (sum int) {
 	}
 	return
 }
+
+func IntClamp(x, low, high int) int {
+	if x < low {
+		x = low
+	}
+	if x >= high {
+		x = high - 1
+	}
+	return x
+}
