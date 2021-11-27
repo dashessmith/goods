@@ -27,5 +27,13 @@ func IsViolatesUniqueError(err error, columns ...string) bool {
 		}) {
 		return true
 	}
+	// 错误: 重复键违反唯一约束"t_goods_name_key"
+	if strings.Contains(err.Error(), "错误: 重复键违反唯一约束") &&
+		All(len(columns), func(index int) bool {
+			matched, _ := regexp.MatchString("\".*"+columns[index]+".*\"", err.Error())
+			return matched
+		}) {
+		return true
+	}
 	return false
 }
