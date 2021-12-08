@@ -38,19 +38,22 @@ func MtIsSorted(x interface{}, less func(i, j int) bool) bool {
 	N := reflect.ValueOf(x).Len()
 	var res uint32 = 1
 	edgeIdx := []int{}
+	edgeMask := map[int]bool{}
 	edgeMtx := sync.Mutex{}
 	Together(func(threadIdx, numThreads int) {
 		tN := N / numThreads
 		start := threadIdx * tN
 		end := (threadIdx + 1) * tN
-		if threadIdx == numThreads-1 {
+		if end > N {
 			end = N
 		}
 		WithMutex(&edgeMtx, func() {
-			if start < N {
+			if start < N && !edgeMask[start] {
+				edgeMask[start] = true
 				edgeIdx = append(edgeIdx, start)
 			}
-			if end-1 < N {
+			if end-1 < N && !edgeMask[end-1] {
+				edgeMask[end-1] = true
 				edgeIdx = append(edgeIdx, end-1)
 			}
 		})
