@@ -64,3 +64,12 @@ func Copy(frompath, topath string) (err error) {
 	_, err = io.Copy(destination, source)
 	return
 }
+
+func Symlink(target string, symlink string) (err error) {
+	distdir := path.Dir(symlink)
+	err = EnsureDir(distdir)
+	if err != nil {
+		return
+	}
+	return os.Symlink(distdir, symlink)
+}
