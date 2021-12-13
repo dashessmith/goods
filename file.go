@@ -1,6 +1,8 @@
 package goods
 
 import (
+	"fmt"
+	"io"
 	"os"
 	"path"
 )
@@ -31,4 +33,34 @@ func Rename(frompath, topath string) (err error) {
 		return
 	}
 	return os.Rename(frompath, topath)
+}
+
+func Copy(frompath, topath string) (err error) {
+	distdir := path.Dir(topath)
+	err = EnsureDir(distdir)
+	if err != nil {
+		return
+	}
+	sourceFileStat, err := os.Stat(frompath)
+	if err != nil {
+		return
+	}
+
+	if !sourceFileStat.Mode().IsRegular() {
+		return fmt.Errorf("%s is not a regular file", frompath)
+	}
+
+	source, err := os.Open(frompath)
+	if err != nil {
+		return err
+	}
+	defer source.Close()
+
+	destination, err := os.Create(topath)
+	if err != nil {
+		return err
+	}
+	defer destination.Close()
+	_, err = io.Copy(destination, source)
+	return
 }
