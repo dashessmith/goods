@@ -46,3 +46,11 @@ func Grep(src string, pattern string) (ret string, err error) {
 	}
 	return
 }
+
+func GrepInt(src string, pattern string) (ret int, err error) {
+	str, err := Grep(src, pattern)
+	if err != nil {
+		return
+	}
+	return strconv.Atoi(str)
+}
