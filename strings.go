@@ -1,7 +1,9 @@
 package goods
 
 import (
+	"regexp"
 	"strconv"
+	"strings"
 	"unicode"
 )
 
@@ -24,4 +26,23 @@ func TrimAllSpace(x string) (ret string) {
 		}
 	}
 	return string(retrune)
+}
+
+func ReplaceAll(s string, new string, olds ...string) string {
+	for _, old := range olds {
+		s = strings.ReplaceAll(s, old, new)
+	}
+	return s
+}
+
+func Grep(src string, pattern string) (ret string, err error) {
+	r, err := regexp.Compile(pattern)
+	if err != nil {
+		return "", err
+	}
+	matches := r.FindStringSubmatch(src)
+	if len(matches) >= 2 {
+		ret = matches[1]
+	}
+	return
 }
