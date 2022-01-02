@@ -35,6 +35,13 @@ func ReplaceAll(s string, new string, olds ...string) string {
 	return s
 }
 
+func TrimIf(s string, precond func(r rune) bool) string {
+	ret := []rune(s)
+	return string(RemoveIf(ret, func(idx int) bool {
+		return precond(ret[idx])
+	}).([]rune))
+}
+
 func Grep(src string, pattern string) (ret string, err error) {
 	r, err := regexp.Compile(pattern)
 	if err != nil {
