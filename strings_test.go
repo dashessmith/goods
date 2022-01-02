@@ -16,7 +16,7 @@ func TestTrimAllSpace(t *testing.T) {
 }
 
 func TestTrimIf(t *testing.T) {
-	nums := `1 2 3  5 6 7 \t 890`
+	nums := `1 2 3  5   6 7 \t 890`
 	nums = goods.TrimIf(nums, func(r rune) bool {
 		return r < '0' || r > '9'
 	})
