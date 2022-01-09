@@ -68,9 +68,11 @@ func NtpNow(addr string) (now time.Time, err error) {
 			}
 		}()
 	}
+	timer := time.NewTimer(10 * time.Second)
+	defer timer.Stop()
 	select {
 	case now = <-ch:
-	case <-time.After(10 * time.Second):
+	case <-timer.C:
 		err = fmt.Errorf("timeout")
 	}
 	return
