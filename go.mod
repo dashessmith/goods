@@ -13,6 +13,7 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/gorilla/websocket v1.4.2
 	github.com/lib/pq v1.10.2
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/umahmood/haversine v0.0.0-20151105152445-808ab04add26
