@@ -56,7 +56,7 @@ func LockTag(tag string) *sync.RWMutex {
 	return mtx
 }
 
-func LockTagf(tag string, f func()) {
+func WithLockTag(tag string, f func()) {
 	mtx := getmtx(tag)
 	mtx.Lock()
 	defer mtx.Unlock()
@@ -69,7 +69,7 @@ func RLockTag(tag string) *sync.RWMutex {
 	return mtx
 }
 
-func RLockTagf(tag string, f func()) {
+func WithRLockTag(tag string, f func()) {
 	mtx := getmtx(tag)
 	mtx.RLock()
 	defer mtx.RUnlock()
