@@ -1,6 +1,8 @@
 package goods
 
-import "sync"
+import (
+	"sync"
+)
 
 func WithMutex(mtx *sync.Mutex, f func()) {
 	if mtx != nil {
@@ -8,4 +10,38 @@ func WithMutex(mtx *sync.Mutex, f func()) {
 		defer mtx.Unlock()
 	}
 	f()
+}
+
+var (
+	mutexesGuard sync.RWMutex
+	mutexes      = map[string]*sync.RWMutex{}
+)
+
+func getmtx(tag string) (mtx *sync.RWMutex) {
+	mutexesGuard.RLock()
+	mtx = mutexes[tag]
+	mutexesGuard.RUnlock()
+	if mtx != nil {
+		return mtx
+	}
+	mutexesGuard.Lock()
+	defer mutexesGuard.Unlock()
+	mtx = mutexes[tag]
+	if mtx == nil {
+		mtx = &sync.RWMutex{}
+		mutexes[tag] = mtx
+	}
+	return
+}
+
+func LockTag(tag string) *sync.RWMutex {
+	mtx := getmtx(tag)
+	mtx.Lock()
+	return mtx
+}
+
+func RLockTag(tag string) *sync.RWMutex {
+	mtx := getmtx(tag)
+	mtx.RLock()
+	return mtx
 }
