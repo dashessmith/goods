@@ -12,6 +12,22 @@ func WithMutex(mtx *sync.Mutex, f func()) {
 	f()
 }
 
+func WithLock(mtx *sync.RWMutex, f func()) {
+	if mtx != nil {
+		mtx.Lock()
+		defer mtx.Unlock()
+	}
+	f()
+}
+
+func WithRLock(mtx *sync.RWMutex, f func()) {
+	if mtx != nil {
+		mtx.RLock()
+		defer mtx.RUnlock()
+	}
+	f()
+}
+
 var (
 	mutexesGuard sync.RWMutex
 	mutexes      = map[string]*sync.RWMutex{}
