@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/go-sql-driver/mysql"
 	"github.com/lib/pq"
 )
 
@@ -14,6 +15,12 @@ func IsViolatesUniqueError(err error, columns ...string) bool {
 	switch et := err.(type) {
 	case *pq.Error:
 		if et.Code == `23505` {
+			if len(columns) <= 0 {
+				return true
+			}
+		}
+	case *mysql.MySQLError:
+		if et.Number == 1062 {
 			if len(columns) <= 0 {
 				return true
 			}
