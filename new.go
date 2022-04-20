@@ -1,5 +1,17 @@
 package goods
 
+import "golang.org/x/exp/constraints"
+
+func New[T constraints.Ordered](x T) *T {
+	return &x
+}
+
+func Slice[T any](src []T) (ret []T) {
+	ret = make([]T, len(src))
+	copy(ret, src)
+	return
+}
+
 // Bool stores v in a new bool value and returns a pointer to it.
 func Bool(v bool) *bool { return &v }
 
