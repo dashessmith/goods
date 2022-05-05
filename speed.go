@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"sync"
 	"text/tabwriter"
 	"time"
 )
 
-func init() {
+func speedInit() {
 	go func() {
 		type S struct {
 			samples uint64
@@ -58,7 +59,10 @@ func init() {
 	}()
 }
 
-var _speedch = make(chan *_Sample, 1024)
+var (
+	_speedch   = make(chan *_Sample, 1024)
+	_speedOnce = sync.Once{}
+)
 
 type _Sample struct {
 	tag *string
@@ -73,6 +77,7 @@ type SpeedSample struct {
 }
 
 func NewSpeedSample(tag string) *SpeedSample {
+	_speedOnce.Do(speedInit)
 	return &SpeedSample{
 		tag:    &tag,
 		beginT: time.Now(),
@@ -97,6 +102,7 @@ func (ss *SpeedSample) Flush() {
 }
 
 func SpeedSampleF(tag string, f func()) {
+	_speedOnce.Do(speedInit)
 	ss := NewSpeedSample(tag)
 	defer ss.Flush()
 	if f != nil {

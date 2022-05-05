@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/oklog/ulid/v2"
@@ -12,9 +13,10 @@ import (
 var (
 	chid      chan string = make(chan string, 1024)
 	chidint64 chan int64  = make(chan int64, 1024)
+	ulidOnce  sync.Once
 )
 
-func init() {
+func ulidInit() {
 	entropy := ulid.Monotonic(rand.New(rand.NewSource(int64(ulid.Timestamp(time.Now())))), 0)
 	var lastid string
 	go func() {
@@ -45,9 +47,11 @@ func init() {
 }
 
 func ULID() string {
+	ulidOnce.Do(ulidInit)
 	return <-chid
 }
 
 func ULIDInt64() int64 {
+	ulidOnce.Do(ulidInit)
 	return <-chidint64
 }
