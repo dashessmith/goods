@@ -61,7 +61,7 @@ func Test_asyncget(t *testing.T) {
 	goods.AssertNoError(t, err)
 	goods.AssertEqual(t, x, 1)
 	time.Sleep(2 * time.Second)
-	x, err = cache.AsyncGet("test", 1, func() (x interface{}, kt time.Duration, err error) {
+	x, err = cache.AsyncGet("test", 2, func() (x interface{}, kt time.Duration, err error) {
 		time.Sleep(time.Second)
 		return 2, time.Minute, nil
 	})

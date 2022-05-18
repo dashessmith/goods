@@ -12,15 +12,20 @@ type timedcacheitem struct {
 	mtx      sync.Mutex
 }
 
-type Timedcache struct {
+type timedcache struct {
 	data sync.Map
+	once sync.Once
 }
 
-func NewTimedcache() *Timedcache {
-	return &Timedcache{}
+func NewTimedcache() *timedcache {
+	tc := &timedcache{}
+
+	tc.once.Do(func() { go tc.cleanExpired() })
+
+	return tc
 }
 
-func (tc *Timedcache) Get(key string, fetchfunc func() (x interface{}, kt time.Duration, err error)) (x interface{}, err error) {
+func (tc *timedcache) Get(key string, fetchfunc func() (x interface{}, kt time.Duration, err error)) (x interface{}, err error) {
 	var item *timedcacheitem
 	actual, _ := tc.data.Load(key)
 	if actual != nil {
@@ -48,7 +53,7 @@ func (tc *Timedcache) Get(key string, fetchfunc func() (x interface{}, kt time.D
 	return
 }
 
-func (tc *Timedcache) AsyncGet(key string, asyncDefault interface{}, fetchfunc func() (x interface{}, kt time.Duration, err error)) (x interface{}, err error) {
+func (tc *timedcache) AsyncGet(key string, asyncDefault interface{}, fetchfunc func() (x interface{}, kt time.Duration, err error)) (x interface{}, err error) {
 	var item *timedcacheitem
 	actual, _ := tc.data.Load(key)
 	if actual != nil {
@@ -93,7 +98,7 @@ func (tc *Timedcache) AsyncGet(key string, asyncDefault interface{}, fetchfunc f
 	return
 }
 
-func (tc *Timedcache) AsyncGetf(key string, firstcall func() interface{}, fetchfunc func() (x interface{}, kt time.Duration, err error)) (x interface{}, err error) {
+func (tc *timedcache) AsyncGetf(key string, firstcall func() interface{}, fetchfunc func() (x interface{}, kt time.Duration, err error)) (x interface{}, err error) {
 	var item *timedcacheitem
 	actual, _ := tc.data.Load(key)
 	if actual != nil {
@@ -140,4 +145,19 @@ func (tc *Timedcache) AsyncGetf(key string, firstcall func() interface{}, fetchf
 		}()
 	})
 	return
+}
+
+func (tc *timedcache) cleanExpired() {
+	for ; ; time.Sleep(time.Minute) {
+		tc.data.Range(func(key, value any) bool {
+			if item := value.(*timedcacheitem); item.et.Before(time.Now()) {
+				tc.Delete(key.(string))
+			}
+			return true
+		})
+	}
+}
+
+func (tc *timedcache) Delete(key string) {
+	tc.data.Delete(key)
 }
