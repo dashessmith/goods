@@ -19,7 +19,7 @@ def push():
     lasttoken = int(tokens[-1]) + 1
     newtag = ".".join(tokens[:-1] + [str(lasttoken)])
     exec("go mod tidy")
-    exec("gofumpt -s -w .")
+    exec("gofmt -w .")
     exec("git add .")
     if len(sys.argv) > 1:
         exec(f'git commit -m "{sys.argv[1]}"')
