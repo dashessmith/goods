@@ -13,6 +13,7 @@ func XYDistance(x1 float64, y1 float64, x2 float64, y2 float64) (dis float64) {
 }
 
 // in meter
+// x
 func XYDistanceMeter(x1 float64, y1 float64, x2 float64, y2 float64) (dis int) {
 	return RoundFloat64(XYDistance(x1, y1, x2, y2))
 }
